@@ -415,7 +415,11 @@ generator, checker) still works, not performance.
 volume: 246 backend tests passed, `alembic check` was clean, the smoke scenario passed 19/19, and the
 frontend's `npm ci`, tests (67) and build succeeded in a clean copy. Differences that only a real
 run can reveal: the runner's Node (locally 24, CI pins 20), its Docker and Compose versions, and timing
-on a slower machine. The first push is the real test; read its logs before trusting it.
+on a slower machine.
+
+**First real run:** the first push to GitHub passed all three jobs (backend 1m 15s, frontend 21s,
+load-smoke 2m 21s; 2m 25s in total). That was read from the run's summary page; the job logs and the
+run's 3 warnings and 3 notices were not inspected.
 
 ## Load tests and the invariant checker
 
