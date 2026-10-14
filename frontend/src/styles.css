@@ -1,0 +1,132 @@
+:root {
+  --bg: #f4f6fa;
+  --card: #ffffff;
+  --text: #1c2430;
+  --muted: #667085;
+  --line: #dfe3ea;
+  --brand: #1f5fbf;
+  --brand-dark: #174a96;
+  --ok: #1a7f4b;
+  --warn: #b42318;
+  --info: #175cd3;
+  --available: #d9f2e3;
+  --available-line: #52b788;
+  --held: #fde9b8;
+  --held-line: #e0a100;
+  --booked: #e3e6eb;
+  --booked-line: #98a2b3;
+  --mine: #cfe0ff;
+  --mine-line: #1f5fbf;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.45;
+}
+
+.app { max-width: 1100px; margin: 0 auto; padding: 16px; }
+
+.top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.top h1 { margin: 0; font-size: 1.5rem; }
+
+.auth { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+
+input {
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  font: inherit;
+  background: #fff;
+}
+
+button {
+  padding: 8px 12px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: #fff;
+  color: var(--text);
+  font: inherit;
+  cursor: pointer;
+}
+button:hover:not(:disabled) { border-color: var(--brand); }
+button:disabled { opacity: 0.55; cursor: not-allowed; }
+button.primary { background: var(--brand); border-color: var(--brand); color: #fff; }
+button.primary:hover:not(:disabled) { background: var(--brand-dark); }
+:focus-visible { outline: 3px solid #9ec1ff; outline-offset: 2px; }
+
+.columns { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: 16px; align-items: start; }
+@media (max-width: 800px) { .columns { grid-template-columns: 1fr; } }
+
+.panel {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin-bottom: 16px;
+}
+.panel h2, .panel h3 { margin: 0 0 8px; }
+
+.muted { color: var(--muted); }
+.ok { color: var(--ok); font-weight: 600; }
+.warn { color: var(--warn); }
+.info { color: var(--info); }
+.fare { font-size: 1.4rem; font-weight: 700; margin: 6px 0; }
+
+.notice {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  background: #fff4e5;
+  border: 1px solid #f5c26b;
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin-bottom: 12px;
+}
+
+.search { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+.search input { flex: 1 1 140px; }
+
+.list { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 6px; }
+.row {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  text-align: left;
+  align-items: baseline;
+}
+.row.active { border-color: var(--brand); background: #f0f6ff; }
+
+.booking-row { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; }
+
+.chip { font-size: 0.8rem; padding: 2px 8px; border-radius: 999px; background: var(--booked); }
+.chip.held { background: var(--held); }
+.chip.confirmed { background: var(--available); }
+
+.legend { list-style: none; display: flex; flex-wrap: wrap; gap: 14px; padding: 0; margin: 4px 0 10px; font-size: 0.9rem; }
+.swatch { display: inline-block; width: 14px; height: 14px; border-radius: 4px; vertical-align: -2px; border: 1px solid; }
+.swatch.available, .seat.available { background: var(--available); border-color: var(--available-line); }
+.swatch.held, .seat.held { background: var(--held); border-color: var(--held-line); }
+.swatch.booked, .seat.booked { background: var(--booked); border-color: var(--booked-line); }
+.swatch.mine, .seat.mine { background: var(--mine); border-color: var(--mine-line); }
+
+.coach h4 { margin: 10px 0 6px; }
+.seats { display: grid; grid-template-columns: repeat(auto-fill, minmax(42px, 1fr)); gap: 6px; max-width: 520px; }
+.seat { padding: 8px 0; text-align: center; font-weight: 600; border-width: 2px; }
+.seat:disabled { opacity: 1; }
+.seat.booked:disabled, .seat.held:disabled { cursor: not-allowed; color: var(--muted); }
+
+.hint { color: var(--warn); margin: 8px 0 0; }
+.countdown { margin: 6px 0 10px; }

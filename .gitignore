@@ -1,0 +1,13 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+.env
+node_modules/
+dist/
+.idea/
+.vscode/
+
+# load test run files (large JSON/CSV); the folder itself is kept
+loadtest/data/*
+!loadtest/data/.gitkeep

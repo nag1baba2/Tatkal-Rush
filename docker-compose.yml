@@ -1,0 +1,103 @@
+x-app-env: &app-env
+  DATABASE_URL: postgresql+psycopg://tatkal:tatkal@postgres:5432/tatkal
+  REDIS_URL: redis://redis:6379/0
+  JWT_SECRET: ${JWT_SECRET:-dev-only-secret-change-me-0123456789abcdef}
+  HOLD_SECONDS: ${HOLD_SECONDS:-300}
+  GATEWAY_FAIL_RATE: ${GATEWAY_FAIL_RATE:-0.3}
+  GATEWAY_LOST_RESPONSE_RATE: ${GATEWAY_LOST_RESPONSE_RATE:-0.1}
+  GATEWAY_DECLINE_RATE: ${GATEWAY_DECLINE_RATE:-0.05}
+  GATEWAY_LATENCY_MS: ${GATEWAY_LATENCY_MS:-0}
+  PAYMENT_STALE_SECONDS: ${PAYMENT_STALE_SECONDS:-30}
+  EXPIRY_SWEEP_SECONDS: ${EXPIRY_SWEEP_SECONDS:-10}
+  DB_POOL_SIZE: ${DB_POOL_SIZE:-20}
+  DB_MAX_OVERFLOW: ${DB_MAX_OVERFLOW:-20}
+  RATE_LIMIT_ENABLED: ${RATE_LIMIT_ENABLED:-true}
+  RATE_LIMIT_CAPACITY: ${RATE_LIMIT_CAPACITY:-10}
+  RATE_LIMIT_REFILL_PER_SECOND: ${RATE_LIMIT_REFILL_PER_SECOND:-5}
+  RATE_LIMIT_IP_CAPACITY: ${RATE_LIMIT_IP_CAPACITY:-100}
+  RATE_LIMIT_IP_REFILL_PER_SECOND: ${RATE_LIMIT_IP_REFILL_PER_SECOND:-50}
+
+services:
+  postgres:
+    image: postgres:16
+    command: postgres -c max_connections=200
+    environment:
+      POSTGRES_USER: tatkal
+      POSTGRES_PASSWORD: tatkal
+      POSTGRES_DB: tatkal
+    ports:
+      - "5433:5432"   # 5433 on the host so it never clashes with a local Postgres
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U tatkal -d tatkal"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  redis:
+    image: redis:7
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  api:
+    build: ./backend
+    command: sh -c "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000 ${UVICORN_ARGS:---reload}"
+    environment: *app-env
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+      - ./loadtest/data:/loadtest-data
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      # The API runs the migrations on start, so "healthy" also means the schema exists.
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 3s
+      timeout: 5s
+      retries: 30
+
+  worker:
+    build: ./backend
+    command: celery -A app.worker.celery_app:celery_app worker --loglevel=INFO --concurrency=2
+    environment: *app-env
+    volumes:
+      - ./backend:/app
+    depends_on:
+      api:
+        condition: service_healthy
+
+  beat:
+    build: ./backend
+    command: celery -A app.worker.celery_app:celery_app beat --loglevel=INFO --schedule=/tmp/celerybeat-schedule
+    environment: *app-env
+    volumes:
+      - ./backend:/app
+    depends_on:
+      api:
+        condition: service_healthy
+
+  # Load generator: only started on demand (docker compose --profile loadtest run ...).
+  locust:
+    profiles: ["loadtest"]
+    build: ./loadtest
+    environment:
+      TARGET: http://api:8000
+    volumes:
+      - ./loadtest:/mnt:ro
+      - ./loadtest/data:/loadtest-data
+    depends_on:
+      api:
+        condition: service_healthy
+
+volumes:
+  pgdata:
