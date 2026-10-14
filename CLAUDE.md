@@ -250,7 +250,7 @@ Logic lives in plain service functions (testable without Celery); `app/worker/ta
 | 5 | Redis token-bucket rate limiter (Lua) | **Done, verified** |
 | 6 | Minimal React (Vite) UI | **Done, verified** |
 | 7 | Locust load tests + invariant checker + README results | **Done, verified** |
-| 8 | GitHub Actions CI + final README + architecture diagram | **Done; CI not yet run on GitHub** |
+| 8 | GitHub Actions CI + final README + architecture diagram | **Done; CI green on first GitHub run** |
 
 Stop after each phase for user review.
 
@@ -380,8 +380,9 @@ Jobs: `backend` (compose up --wait, pytest inside the api container, alembic che
 `load-smoke` (`bash loadtest/run_scenario.sh ci-smoke 20 10 120 off 1 10 1`, uploads reports). Backend tests run in the compose
 stack because `test_concurrency.py` needs a live API (it skips itself otherwise). 1,000-user runs stay out of CI on purpose.
 Verified locally only: actionlint clean; from an emptied pgdata volume 246 passed + `alembic check` clean; smoke 19/19 in ~95 s;
-frontend clean `npm ci` + 67 tests + build (local Node 24, CI pins 20). NOT verified: a real GitHub Actions run, runner
-Docker/Compose versions, GitHub's Mermaid rendering (diagram syntax parsed with mermaid 11.4.1 in Node).
+frontend clean `npm ci` + 67 tests + build (local Node 24, CI pins 20). Pushed to https://github.com/nag1baba2/Tatkal-Rush (origin/main). First Actions run (commit a4f0371) passed backend, frontend, load-smoke
+(user's screenshot of the summary; logs and 3 warnings/3 notices not read). NOT verified: GitHub's Mermaid rendering
+(diagram syntax parsed with mermaid 11.4.1 in Node).
 Local runs of `docker compose down -v` delete the seed data: re-run `docker compose exec api python -m app.seed`.
 
 ## How to run (Windows 11 + Docker Desktop)

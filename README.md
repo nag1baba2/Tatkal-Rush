@@ -8,7 +8,7 @@ or double-charge a payment.
 > idempotency, payments with a state machine, fake gateway and circuit breaker,
 > background worker for hold expiry and stuck payments, Redis rate limiter, React
 > UI, load tests with an invariant checker, GitHub Actions workflow).
-> The CI workflow was validated locally but **has not yet run on GitHub** (see "CI").
+> CI: the first GitHub Actions run (2026-10-14, commit a4f0371) passed all three jobs (see "CI").
 
 ## What this project demonstrates
 - **Correctness under concurrency**: 200 simultaneous requests for one seat produce exactly one
@@ -410,7 +410,7 @@ The 1,000-user scenarios are **not** in CI: they take minutes, need many CPUs an
 noisy to give numbers worth recording. The smoke job checks that the whole pipeline (stack, load
 generator, checker) still works, not performance.
 
-**What was verified, and what was not.** I could not run GitHub Actions. Instead: the workflow passes
+**What was verified, and what was not.** Before pushing I could not run GitHub Actions, so: the workflow passes
 `actionlint`, and each job's commands were run locally against a freshly created (empty) database
 volume: 246 backend tests passed, `alembic check` was clean, the smoke scenario passed 19/19, and the
 frontend's `npm ci`, tests (67) and build succeeded in a clean copy. Differences that only a real
