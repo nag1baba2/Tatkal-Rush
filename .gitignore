@@ -11,3 +11,6 @@ dist/
 # load test run files (large JSON/CSV); the folder itself is kept
 loadtest/data/*
 !loadtest/data/.gitkeep
+
+# local assistant notes, not part of the repo
+CLAUDE.md

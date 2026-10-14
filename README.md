@@ -386,7 +386,7 @@ the suite failed every time. One known gap: removing only the re-check after the
 sweeper's row lock is not detected, because it guards a window of a few
 milliseconds that cannot be forced. One run found the chaos test was initially
 vacuous (the fake gateway never lost a response on a retry, so no payment ever
-stayed unresolved); that was fixed and is described in `CLAUDE.md`.
+stayed unresolved); that was fixed, and the test now asserts that payments really do stay unresolved.
 
 Limits of these tests: "N parallel" means N requests released at the same
 instant; database concurrency is bounded by the connection pool (50 for the
